@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Настройки</string>
+    <string name="length">Длина ключа:</string>
+    <string name="generate">Генерировать</string>
+    <string name="details">Описание ключа</string>
+    <string name="details_modulus">Modulus:</string>
+    <string name="details_private">Приватный ключ:</string>
+    <string name="details_public">Публичный ключ:</string>
+    <string name="encrypt">Шифровка</string>
+    <string name="encrypt_do">Зашифровать</string>
+    <string name="encrypt_message">Сообщение:</string>
+    <string name="encrypt_message_error">Сообщение не может быть пустым!</string>
+    <string name="hack_do">Взломать</string>
+    <string name="app_name">WienerAttack</string>
+    <string name="key_1024">1024</string>
+    <string name="key_2048">2048</string>
+    <string name="key_512">512</string>
+    <string name="encrypted">Зашифрованная строка:</string>
+    <string name="decrypted_message">Дешифрованная строка:</string>
+    <string name="original_message">Оригинальная строка:</string>
+    <string name="sorry">К сожалению, не удалось подобрать приватный ключ</string>
+    <string name="hack_successful">Взлом удался!</string>
+</resources>
