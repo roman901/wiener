@@ -2,6 +2,7 @@
 <resources>
     <string name="settings">Настройки</string>
     <string name="length">Длина ключа:</string>
+    <string name="r">Коэффициент превышения:</string>
     <string name="generate">Генерировать</string>
     <string name="details">Описание ключа</string>
     <string name="details_modulus">Modulus:</string>

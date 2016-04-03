@@ -98,6 +98,18 @@
                             android:layout_weight="1" />
                     </RadioGroup>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/r" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/rLength"
+                        android:inputType="number"
+                        android:text="10" />
+
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

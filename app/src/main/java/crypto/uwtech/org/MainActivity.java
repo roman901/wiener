@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         RadioGroup keyGroup = (RadioGroup) findViewById(R.id.keyGroup);
 
+        final EditText rLength = (EditText) findViewById(R.id.rLength);
         final EditText encryptMessage = (EditText) findViewById(R.id.encryptMessage);
 
         encryptedMessage = (TextView) findViewById(R.id.encryptedMessage);
@@ -84,7 +85,8 @@ public class MainActivity extends AppCompatActivity {
                 genStep.setVisibility(View.GONE);
                 KEY = null;
                 KeyGenTask task = new KeyGenTask();
-                task.execute(LENGTH);
+                int r = Integer.parseInt(rLength.getText().toString());
+                task.execute(LENGTH, r);
                 progress.setVisibility(View.VISIBLE);
                 progress.startAnimation(slide_in);
             }
@@ -138,9 +140,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected KeyDetails doInBackground(Integer... params) {
-            int length = params[0];
-            Log.d("KeyGenTask", "Length: " + length);
-            while (!gen(length)) ;
+            int length = params[0] / 2;
+            int r = params[1];
+            Log.d("KeyGenTask", "Length: " + length * 2);
+            while (!gen(length, r)) ;
             return new KeyDetails(modulus, privateKey, publicKey);
         }
 
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(result);
             Log.d("KeyGenTask", "Key generated");
             Log.d("KeyGenTask", "Modulus: " + result.getModulus());
-            Log.d("KeyGenTask", "Private key: " + result.getPrivateKey());
+            Log.d("KeyGenTask", "Private key: " + result.getPrivateKey().subtract(TWO));
             Log.d("KeyGenTask", "Public key: " + result.getPublicKey());
             MainActivity.KEY = result;
             progress.startAnimation(slide_out);
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             encStep.setVisibility(View.VISIBLE);
         }
 
-        private boolean gen(int length) {
+        private boolean gen(int length, int r) {
             try {
                 System.out.println("New try");
                 BigInteger q = TWO.pow(length);
@@ -168,16 +171,18 @@ public class MainActivity extends AppCompatActivity {
                 BigInteger phi = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE));
                 modulus = p.multiply(q);
 
+                Log.d("KeyGenTask", "P: " + p);
+                Log.d("KeyGenTask", "Q: " + q);
+
                 int iter = 0;
-                int r = 10;
                 BigInteger h = p.divide(q);
 
-                BigDecimal alpha = new BigDecimal(h).add(BigDecimal.ONE).divide(sqrt(new BigDecimal(h)), BigDecimal.ROUND_HALF_UP);
+                BigDecimal alpha = new BigDecimal(h).add(BigDecimal.ONE).divide(sqrt(new BigDecimal(h)));
 
-                BigInteger dkp = BigDecimal.ONE.divide(sqrt(alpha.multiply(new BigDecimal(TWO))), BigDecimal.ROUND_HALF_UP).multiply(sqrt(sqrt(new BigDecimal(modulus)))).toBigInteger();
-                BigInteger Kkp = dkp.divide(BigInteger.valueOf(r));
+                BigDecimal dkp = BigDecimal.ONE.divide(sqrt(alpha.multiply(new BigDecimal(TWO))), 100, BigDecimal.ROUND_FLOOR).multiply(sqrt(sqrt(new BigDecimal(modulus))));
+                BigDecimal Kkp = dkp.divide(BigDecimal.valueOf(r));
                 boolean found = false;
-                BigInteger d0 = dkp.multiply(BigInteger.valueOf(r));
+                BigInteger d0 = dkp.multiply(BigDecimal.valueOf(r)).toBigInteger();
                 if (d0.mod(TWO).equals(BigInteger.ZERO)) {
                     d0 = d0.add(BigInteger.ONE);
                 }
@@ -186,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("KeyGenTask", "Try: " + iter);
                     if (privateKey.gcd(phi).equals(BigInteger.ONE)) {
                         publicKey = privateKey.modInverse(phi);
-                        BigInteger K = publicKey.multiply(privateKey).subtract(BigInteger.ONE).divide(phi);
+                        BigDecimal K = new BigDecimal(publicKey.multiply(privateKey).subtract(BigInteger.ONE).divide(phi));
                         if (K.compareTo(Kkp) < 0) {
                             found = true;
                         }
